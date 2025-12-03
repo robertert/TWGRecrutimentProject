@@ -12,6 +12,7 @@ import { Image } from "expo-image";
 import SearchBar from "../../../../components/SearchBar";
 import CategoryItem from "../../../../components/CategoryItem";
 import { router } from "expo-router";
+import { useState } from "react";
 
 const categories = [
   { id: 1, name: "Typescript" },
@@ -20,12 +21,27 @@ const categories = [
 ];
 
 export default function Home() {
+  const [search, setSearch] = useState<string>("");
+
+  const searchFunction = (query: string) => {
+    router.replace({
+      pathname: "./search",
+      params: {
+        searchQuery: query,
+      },
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView>
         <View style={styles.topSection}>
-          <SearchBar />
-          <Pressable onPress={() => router.push("./(stack)/settings")}>
+          <SearchBar
+            value={search}
+            setValue={setSearch}
+            searchFunction={searchFunction}
+          />
+          <Pressable onPress={() => router.replace("/(app)/(stack)/settings")}>
             <Image
               source={require("../../../../assets/icons/settings-icon.svg")}
               style={styles.settingsIcon}
@@ -59,6 +75,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   settingsIcon: {
+    marginLeft: 12,
     width: 32,
     height: 32,
   },

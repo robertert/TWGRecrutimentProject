@@ -6,6 +6,7 @@ export type Category = {
 export type Movie = {
   id: number;
   name: string;
+  author: string;
   thumbnailUrl: string;
   date: string;
 };

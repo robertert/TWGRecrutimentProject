@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
 import { Colors } from "../constants/colors";
 import MovieItem from "./MovieItem";
 import { router } from "expo-router";
+import { movies } from "../constants/dummy_data";
 
 export default function CategoryItem({
   category,
@@ -11,27 +12,6 @@ export default function CategoryItem({
   category: Category;
   isLast: boolean;
 }) {
-  const movies = [
-    {
-      id: 1,
-      name: "Movie 1, This is a long movie",
-      thumbnailUrl: "https://via.placeholder.com/150",
-      date: "2025-01-01",
-    },
-    {
-      id: 2,
-      name: "Movie 2, This is a long movie name, This is a long movie name, This is a long movie name",
-      thumbnailUrl: "https://via.placeholder.com/150",
-      date: "2025-01-01",
-    },
-    {
-      id: 3,
-      name: "Movie 3, This is a long movie name, This is a long movie name, This is a long movie name",
-      thumbnailUrl: "https://via.placeholder.com/150",
-      date: "2025-01-01",
-    },
-  ];
-
   const renderMovieItem = ({ item, index }: { item: Movie; index: number }) => (
     <MovieItem
       movie={item}
