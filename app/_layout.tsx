@@ -1,4 +1,4 @@
-import { Slot, useRouter, useSegments } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -13,7 +13,7 @@ export default function RootLayout() {
   const session = useAuthStore((state) => state.session);
   const router = useRouter();
   const segments = useSegments();
-  const [isReady, setIsReady] = useState(false);
+  const [isNavigationReady, setIsNavigationReady] = useState(false);
 
   // Ładowanie czcionek
   const [fontsLoaded, fontError] = useFonts({
@@ -27,34 +27,31 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    const unsub = useAuthStore.persist.onFinishHydration(() =>
-      setIsReady(true)
-    );
-    if (useAuthStore.persist.hasHydrated()) setIsReady(true);
-    return () => unsub();
+    if (fontsLoaded && !fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  useEffect(() => {
+    setIsNavigationReady(true);
   }, []);
 
   useEffect(() => {
-    if (fontsLoaded && isReady && !fontError) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, isReady, fontError]);
-
-  useEffect(() => {
-    if (!isReady) return;
+    if (!isNavigationReady || !fontsLoaded) return;
 
     const inAuthGroup = segments[0] === "(auth)";
+    const inAppGroup = segments[0] === "(app)";
 
     if (!session && !inAuthGroup) {
       router.replace("/(auth)/sign-in");
     } else if (session === "guest" && inAuthGroup) {
-      router.replace("/(app)/(tabs)/");
-    } else if (session === "guest" && segments.length > 0) {
-      router.replace("/(app)/(tabs)/");
+      router.navigate("/(app)/(stack)/(tabs)/home");
+    } else if (session === "guest" && !inAppGroup) {
+      router.replace("/(app)/(stack)/(tabs)/home");
     }
-  }, [session, segments, isReady]);
+  }, [session, segments, isNavigationReady, fontsLoaded]);
 
-  if (!isReady || !fontsLoaded || fontError) {
+  if (!fontsLoaded || fontError) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color={Colors.primary700} />
@@ -62,5 +59,5 @@ export default function RootLayout() {
     );
   }
 
-  return <Slot />;
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

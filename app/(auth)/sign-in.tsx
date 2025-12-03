@@ -3,7 +3,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../../constants/colors";
 import { Image } from "expo-image";
 import { useAuthStore } from "../../store/authStore";
-import { useRouter } from "expo-router";
 
 export default function SignIn() {
   const signIn = useAuthStore((state) => state.signIn);
