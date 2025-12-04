@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../../../../constants/colors";
 import SearchBar from "../../../../components/SearchBar";
 import { useLocalSearchParams } from "expo-router";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { FlashList, FlashListRef } from "@shopify/flash-list";
 import SearchResultItem from "../../../../components/SearchResultItem";
 import SearchResultItemSkeleton from "../../../../components/skeletons/SearchResultItemSkeleton";
@@ -33,6 +33,11 @@ export default function Search() {
     loadMore,
     searchVideos,
   } = useVideoSearch(query, mapSortBy(sortBy) || "viewCount");
+
+  useEffect(() => {
+    setSearch(searchQuery as string);
+    setQuery(searchQuery as string);
+  }, [searchQuery]);
 
   const searchFunction = (query: string) => {
     setQuery(query);
@@ -73,7 +78,7 @@ export default function Search() {
             </Pressable>
           </>
         )}
-        {query.length === 0 ? (
+        {!query || query?.length === 0 ? (
           <View style={styles.searchResultListEmpty}>
             <Text style={styles.searchResultListEmptyText}>
               Please enter a search query

@@ -5,6 +5,27 @@ export type Category = {
   name: string;
 };
 
+export const YouTubeRawVideoItemSchema = z.object({
+  id: z.string(),
+  snippet: z.object({
+    title: z.string(),
+    description: z.string(),
+    thumbnails: z.object({
+      medium: z.object({
+        url: z.string(),
+      }),
+    }),
+    channelTitle: z.string(),
+    publishedAt: z.string(),
+  }),
+  statistics: z.object({
+    viewCount: z.string(),
+    likeCount: z.string(),
+  }),
+});
+
+export type YouTubeRawVideoItem = z.infer<typeof YouTubeRawVideoItemSchema>;
+
 export const YouTubeRawItemSchema = z.object({
   id: z.object({
     videoId: z.string(),

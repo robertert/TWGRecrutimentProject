@@ -131,7 +131,10 @@ export default function VideoScreen() {
           <VideoTabs.Screen
             name="Details"
             component={DetailsScreen}
-            options={{ title: "Details" }}
+            options={{
+              title: "Details",
+              lazy: false,
+            }}
           />
           <VideoTabs.Screen
             name="Notes"

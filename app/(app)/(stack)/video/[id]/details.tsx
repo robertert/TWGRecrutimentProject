@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, ScrollView } from "react-native";
 import { Colors } from "../../../../../constants/colors";
 import { Image } from "expo-image";
 import { useVideoStore } from "../../../../../store/videoStore";
@@ -13,7 +13,13 @@ export default function DetailsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+      nestedScrollEnabled={true}
+      bounces={true}
+    >
       <Text style={styles.subtitle}>Description</Text>
       <Text style={styles.descriptionText}>{video?.description}</Text>
       <Text style={styles.subtitle}>Statistics</Text>
@@ -39,7 +45,7 @@ export default function DetailsScreen() {
           </Text>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -47,6 +53,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.primary100,
+  },
+  contentContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
   },
   subtitle: {
     paddingTop: 16,
