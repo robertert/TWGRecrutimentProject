@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useAuthStore } from "../store/authStore";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, StatusBar } from "react-native";
 import { Colors } from "../constants/colors";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Zapobiegaj automatycznemu ukryciu splash screen
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
   const session = useAuthStore((state) => state.session);
@@ -59,5 +62,10 @@ export default function RootLayout() {
     );
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Stack screenOptions={{ headerShown: false }} />
+      <StatusBar backgroundColor={Colors.primary500} barStyle="light-content" />
+    </QueryClientProvider>
+  );
 }

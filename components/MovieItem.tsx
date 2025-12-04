@@ -1,20 +1,20 @@
 import { View, StyleSheet, Text, Pressable } from "react-native";
-import { Movie } from "../types/types";
+import { VideoItem } from "../types/types";
 import { Image } from "expo-image";
 import { Colors } from "../constants/colors";
 import { router } from "expo-router";
 
 export default function MovieItem({
-  movie,
+  video,
   isFirst,
   isLast,
 }: {
-  movie: Movie;
+  video: VideoItem;
   isFirst: boolean;
   isLast: boolean;
 }) {
   return (
-    <Pressable onPress={() => router.push(`/(app)/(stack)/video/${movie.id}`)}>
+    <Pressable onPress={() => router.push(`/(app)/(stack)/video/${video.id}`)}>
       <View
         style={[
           styles.movieItem,
@@ -23,18 +23,20 @@ export default function MovieItem({
         ]}
       >
         <Image
-          source={require("../assets/placeholder_thumbnail.png")}
+          source={{ uri: video.thumbnail }}
           style={styles.movieItemThumbnail}
           contentFit="cover"
+          placeholder={require("../assets/placeholder_thumbnail.png")}
+          placeholderContentFit="cover"
         />
         <Text
           numberOfLines={2}
           style={styles.movieItemName}
           ellipsizeMode="tail"
         >
-          {movie.name}
+          {video.title}
         </Text>
-        <Text style={styles.movieItemDate}>{movie.date}</Text>
+        <Text style={styles.movieItemDate}>{video.publishedAt}</Text>
       </View>
     </Pressable>
   );

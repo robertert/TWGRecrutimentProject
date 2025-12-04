@@ -6,22 +6,32 @@ import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { FlashList } from "@shopify/flash-list";
 import SearchResultItem from "../../../../components/SearchResultItem";
-import { movies } from "../../../../constants/dummy_data";
-import { Movie } from "../../../../types/types";
+import SearchResultItemSkeleton from "../../../../components/skeletons/SearchResultItemSkeleton";
+import { VideoItem } from "../../../../types/types";
+import { useVideoSearch } from "../../../../hooks/useVideoSearch";
 
 export default function Search() {
   const { searchQuery } = useLocalSearchParams();
-
-  const [search, setSearch] = useState<string>(searchQuery as string);
+  const [search, setSearch] = useState<string>((searchQuery as string) || "");
+  const [query, setQuery] = useState<string>(search);
   const [sortBy, setSortBy] = useState<string>("Most popular");
-  const [searchResult, setSearchResult] = useState<Movie[]>(movies);
+
+  const {
+    videos,
+    totalResults,
+    isLoading,
+    error,
+    hasMore,
+    isLoadingMore,
+    loadMore,
+  } = useVideoSearch(query);
 
   const searchFunction = (query: string) => {
-    console.log("searchFunction", query);
+    setQuery(query);
   };
 
-  const renderSearchResultItem = ({ item }: { item: Movie }) => (
-    <SearchResultItem movie={item} />
+  const renderSearchResultItem = ({ item }: { item: VideoItem }) => (
+    <SearchResultItem video={item} />
   );
 
   return (
@@ -32,10 +42,10 @@ export default function Search() {
           setValue={setSearch}
           searchFunction={searchFunction}
         />
-        {searchResult.length > 0 && (
+        {videos.length > 0 && (
           <>
             <Text style={styles.searchResultText}>
-              {searchResult.length} results found for{" "}
+              {totalResults} results found for{" "}
               <Text style={styles.searchQuery}>"{search}"</Text>
             </Text>
             <Pressable>
@@ -46,12 +56,31 @@ export default function Search() {
           </>
         )}
         <View style={styles.searchResultList}>
-          <FlashList
-            data={searchResult}
-            renderItem={renderSearchResultItem}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-          />
+          {isLoading ? (
+            <View>
+              <SearchResultItemSkeleton />
+              <SearchResultItemSkeleton />
+              <SearchResultItemSkeleton />
+            </View>
+          ) : error ? (
+            <Text>{error}</Text>
+          ) : (
+            <FlashList
+              data={videos}
+              renderItem={renderSearchResultItem}
+              keyExtractor={(item) => item.id.toString()}
+              showsVerticalScrollIndicator={false}
+              onEndReached={() => {
+                if (hasMore) {
+                  loadMore();
+                }
+              }}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={() =>
+                isLoadingMore ? <SearchResultItemSkeleton /> : null
+              }
+            />
+          )}
         </View>
       </View>
     </SafeAreaView>

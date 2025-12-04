@@ -5,6 +5,9 @@ export const movies = [
     thumbnailUrl: "https://via.placeholder.com/150",
     date: "2025-01-01",
     author: "Author 1",
+    views: 2000000000,
+    likes: 20000000,
+    description: "This is a description",
   },
   {
     id: 2,
@@ -12,6 +15,9 @@ export const movies = [
     thumbnailUrl: "https://via.placeholder.com/150",
     date: "2025-01-01",
     author: "Author 2",
+    views: 2000000000,
+    likes: 20000000,
+    description: "This is a description",
   },
   {
     id: 3,
@@ -19,5 +25,8 @@ export const movies = [
     thumbnailUrl: "https://via.placeholder.com/150",
     date: "2025-01-01",
     author: "Author 3",
+    views: 20000000,
+    likes: 20000000,
+    description: "This sdasdas is a description",
   },
 ];

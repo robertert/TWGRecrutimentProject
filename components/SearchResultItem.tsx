@@ -1,28 +1,33 @@
 import { router } from "expo-router";
-import { Movie } from "../types/types";
+import { VideoItem } from "../types/types";
 import { Pressable, View, StyleSheet, Text } from "react-native";
 import { Image } from "expo-image";
 import { Colors } from "../constants/colors";
 
-export default function SearchResultItem({ movie }: { movie: Movie }) {
+export default function SearchResultItem({ video }: { video: VideoItem }) {
   return (
-    <Pressable onPress={() => router.push(`/(app)/(stack)/video/${movie.id}`)}>
+    <Pressable onPress={() => router.push(`/(app)/(stack)/video/${video.id}`)}>
       <View style={styles.searchResultItem}>
         <Image
-          source={require("../assets/placeholder_thumbnail.png")}
+          source={{ uri: video.thumbnail }}
           style={styles.searchResultItemThumbnail}
+          contentFit="cover"
+          placeholder={require("../assets/placeholder_thumbnail.png")}
+          placeholderContentFit="cover"
         />
         <View style={styles.searchResultItemInfo}>
-          <Text style={styles.searchResultItemAuthor}>{movie.author}</Text>
+          <Text style={styles.searchResultItemAuthor}>
+            {video.channelTitle}
+          </Text>
           <Text
             numberOfLines={2}
             ellipsizeMode="tail"
             style={styles.searchResultItemName}
           >
-            {movie.name}
+            {video.title}
           </Text>
         </View>
-        <Text style={styles.searchResultItemDate}>{movie.date}</Text>
+        <Text style={styles.searchResultItemDate}>{video.publishedAt}</Text>
       </View>
     </Pressable>
   );

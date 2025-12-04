@@ -1,9 +1,18 @@
-import { Category, Movie } from "../types/types";
-import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
+import { Category, VideoItem } from "../types/types";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import { Colors } from "../constants/colors";
 import MovieItem from "./MovieItem";
 import { router } from "expo-router";
-import { movies } from "../constants/dummy_data";
+import { useVideoSearch } from "../hooks/useVideoSearch";
+import { useEffect } from "react";
+import CategoryItemSkeleton from "./skeletons/CategoryItemSkeleton";
 
 export default function CategoryItem({
   category,
@@ -12,13 +21,30 @@ export default function CategoryItem({
   category: Category;
   isLast: boolean;
 }) {
-  const renderMovieItem = ({ item, index }: { item: Movie; index: number }) => (
+  const { videos, isLoading, error, hasMore, loadMore } = useVideoSearch(
+    category.name
+  );
+
+  const renderMovieItem = ({
+    item,
+    index,
+  }: {
+    item: VideoItem;
+    index: number;
+  }) => (
     <MovieItem
-      movie={item}
+      video={item}
       isFirst={index === 0}
-      isLast={index === movies.length - 1}
+      isLast={index === videos.length - 1}
     />
   );
+  if (isLoading) {
+    return <CategoryItemSkeleton />;
+  }
+  if (error) {
+    return <Text>{error}</Text>;
+  }
+
   return (
     <>
       <View style={styles.categoryItem}>
@@ -39,12 +65,18 @@ export default function CategoryItem({
         </View>
         <View style={styles.moviesListContainer}>
           <FlatList
-            data={movies}
+            data={videos}
             renderItem={({ item, index }) => renderMovieItem({ item, index })}
             contentContainerStyle={{ gap: 20 }}
             keyExtractor={(item) => item.id.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
+            onEndReached={() => {
+              if (hasMore) {
+                loadMore();
+              }
+            }}
+            onEndReachedThreshold={0.5}
           />
         </View>
       </View>

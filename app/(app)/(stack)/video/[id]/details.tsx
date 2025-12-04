@@ -3,12 +3,13 @@ import { Colors } from "../../../../../constants/colors";
 import { Image } from "expo-image";
 import { useVideoStore } from "../../../../../store/videoStore";
 import { formatNumber } from "../../../../../utils/functions";
+import MovieDetailsSkeleton from "../../../../../components/skeletons/MovieDetailsSkeleton";
 
 export default function DetailsScreen() {
   const { video } = useVideoStore();
 
   if (!video) {
-    return null;
+    return <MovieDetailsSkeleton />;
   }
 
   return (
@@ -24,7 +25,7 @@ export default function DetailsScreen() {
             contentFit="scale-down"
           />
           <Text style={styles.statisticsItemValue}>
-            {formatNumber(video?.views)} views
+            {formatNumber(video?.views || 0)} views
           </Text>
         </View>
         <View style={styles.statisticsItem}>
@@ -34,7 +35,7 @@ export default function DetailsScreen() {
             contentFit="scale-down"
           />
           <Text style={styles.statisticsItemValue}>
-            {formatNumber(video?.likes)} likes
+            {formatNumber(video?.likes || 0)} likes
           </Text>
         </View>
       </View>

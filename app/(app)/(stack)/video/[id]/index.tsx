@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
 import Video from "react-native-video";
 import { useLocalSearchParams } from "expo-router";
 import { Colors } from "../../../../../constants/colors";
@@ -9,35 +9,21 @@ import { Image } from "expo-image";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import DetailsScreen from "./details";
 import NotesScreen from "./notes";
-import { useVideoStore } from "../../../../../store/videoStore";
-import { useEffect } from "react";
+import { useVideoSearchDetails } from "../../../../../hooks/useVideoSearchDetails";
+import UserSkeleton from "../../../../../components/skeletons/UserSkeleton";
 
 const videoSource = require("../../../../../assets/video/broadchurch.mp4");
-
-const dummyMovie = {
-  id: 1,
-  name: "Movie 1, This is a long movie name, This is a long movie name, This is a long movie name",
-  author: "Author 1",
-  thumbnailUrl: "https://via.placeholder.com/150",
-  date: "2025-01-01",
-  description:
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-  views: 20000000,
-  likes: 20000000,
-};
 
 const VideoTabs = createMaterialTopTabNavigator();
 
 export default function VideoScreen() {
   const { id } = useLocalSearchParams();
 
+  const { videoDetails, isLoading, error, refresh } = useVideoSearchDetails(
+    id as string
+  );
+
   const safeAreaInsets = useSafeAreaInsets();
-
-  const { setVideo } = useVideoStore();
-
-  useEffect(() => {
-    setVideo(dummyMovie);
-  }, []);
 
   const {
     videoRef,
@@ -56,6 +42,10 @@ export default function VideoScreen() {
     handleVideoProgress,
     handleVideoLoad,
   } = useVideoPlayer();
+
+  if (error) {
+    return <Text>{error}</Text>;
+  }
 
   return (
     <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
@@ -86,19 +76,25 @@ export default function VideoScreen() {
           togglePlayPause={togglePlayPause}
         />
       </View>
-      <Text numberOfLines={1} ellipsizeMode="tail" style={styles.movieName}>
-        {dummyMovie.name}
-      </Text>
-      <View style={styles.movieAuthorContainer}>
-        <View style={styles.movieAuthorIconContainer}>
-          <Image
-            source={require("../../../../../assets/icons/person-icon.svg")}
-            style={styles.movieAuthorIcon}
-            contentFit="scale-down"
-          />
-        </View>
-        <Text style={styles.movieAuthor}>{dummyMovie.author}</Text>
-      </View>
+      {isLoading ? (
+        <UserSkeleton />
+      ) : (
+        <>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.movieName}>
+            {videoDetails?.title}
+          </Text>
+          <View style={styles.movieAuthorContainer}>
+            <View style={styles.movieAuthorIconContainer}>
+              <Image
+                source={require("../../../../../assets/icons/person-icon.svg")}
+                style={styles.movieAuthorIcon}
+                contentFit="scale-down"
+              />
+            </View>
+            <Text style={styles.movieAuthor}>{videoDetails?.channelTitle}</Text>
+          </View>
+        </>
+      )}
       <View style={styles.materialTopTabsContainer}>
         <VideoTabs.Navigator
           screenOptions={{
