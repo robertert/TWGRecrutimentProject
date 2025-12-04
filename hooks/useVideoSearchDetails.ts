@@ -1,15 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
-import { VideoItem, VideoItemSchema } from "../types/types";
+import {
+  VideoItem,
+  YouTubeRawItemSchema,
+  YouTubeRawItem,
+} from "../types/types";
 import { useVideoStore } from "../store/videoStore";
 import { useEffect } from "react";
 
 const BASE_URL = "https://www.googleapis.com/youtube/v3/videos";
 const API_KEY = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY;
 
-// Helper do mapowania
-const mapYouTubeResponse = (item: any): VideoItem => {
+const mapYouTubeResponse = (item: YouTubeRawItem): VideoItem => {
   return {
-    id: item.id,
+    id: item.id.videoId,
     title: item.snippet.title,
     description: item.snippet.description,
     thumbnail: item.snippet.thumbnails.medium.url,
@@ -30,16 +33,16 @@ const fetchVideoDetails = async (videoId: string) => {
   const response = await fetch(url);
   const data = await response.json();
 
-  const validatedVideoItems = VideoItemSchema.safeParse(data.items[0]);
+  if (!data.items || data.items.length === 0) {
+    throw new Error("Nie znaleziono wideo");
+  }
+
+  const validatedVideoItems = YouTubeRawItemSchema.safeParse(data.items[0]);
   if (!validatedVideoItems.success) {
     throw new Error(validatedVideoItems.error.message);
   }
   if (data.error) {
     throw new Error(data.error.message || "Błąd API YouTube");
-  }
-
-  if (!data.items || data.items.length === 0) {
-    throw new Error("Nie znaleziono wideo");
   }
 
   return mapYouTubeResponse(validatedVideoItems.data);

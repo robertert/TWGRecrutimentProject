@@ -5,50 +5,49 @@ export type Category = {
   name: string;
 };
 
-export const VideoItemSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  description: z.string(),
-  thumbnail: z.string(),
-  channelTitle: z.string(),
-  publishedAt: z.string(),
-  views: z.number().optional(),
-  likes: z.number().optional(),
+export const YouTubeRawItemSchema = z.object({
+  id: z.object({
+    videoId: z.string(),
+  }),
+  snippet: z.object({
+    title: z.string(),
+    description: z.string(),
+    thumbnails: z.object({
+      medium: z.object({
+        url: z.string(),
+      }),
+    }),
+    channelTitle: z.string(),
+    publishedAt: z.string(),
+  }),
+  statistics: z
+    .object({
+      viewCount: z.string(),
+      likeCount: z.string(),
+    })
+    .optional(),
 });
 
-export type VideoItem = z.infer<typeof VideoItemSchema>;
+export type YouTubeRawItem = z.infer<typeof YouTubeRawItemSchema>;
 
-export const VideoItemResponseSchema = z.object({
-  items: z.array(VideoItemSchema),
+export const YouTubeSearchResponseSchema = z.object({
+  items: z.array(YouTubeRawItemSchema),
   nextPageToken: z.string().optional(),
   pageInfo: z.object({
     totalResults: z.number(),
   }),
+  error: z.object({ message: z.string() }).optional(),
 });
 
-export type VideoItemResponse = z.infer<typeof VideoItemResponseSchema>;
+export type YouTubeSeachResponse = z.infer<typeof YouTubeSearchResponseSchema>;
 
-export const safeValidateArray = <T>(
-  schema: z.ZodSchema<T>,
-  data: T[]
-): { success: boolean; errors: string[]; data: T[] } => {
-  if (!Array.isArray(data)) {
-    return { success: false, errors: ["Data is not an array"], data: [] };
-  }
-  const errors: string[] = [];
-  const results = data.map((item) => {
-    const result = schema.safeParse(item);
-    if (!result.success) {
-      errors.push(result.error.message);
-    }
-    return result.data;
-  });
-  if (errors.length > 0) {
-    return { success: false, errors, data: [] };
-  }
-  return {
-    success: true,
-    errors,
-    data: results.filter((result) => result !== undefined) as T[],
-  };
-};
+export interface VideoItem {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  channelTitle: string;
+  publishedAt: string;
+  views?: string;
+  likes?: string;
+}

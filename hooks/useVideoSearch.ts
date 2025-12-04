@@ -1,16 +1,17 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import {
-  safeValidateArray,
   VideoItem,
-  VideoItemResponseSchema,
-  VideoItemSchema,
+  YouTubeSeachResponse,
+  YouTubeSearchResponseSchema,
 } from "../types/types";
 import { useMemo } from "react";
 
 const BASE_URL = "https://www.googleapis.com/youtube/v3/search";
 const API_KEY = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY;
 
-const mapYouTubeResponse = (items: any[]): VideoItem[] => {
+const mapYouTubeResponse = (
+  items: YouTubeSeachResponse["items"]
+): VideoItem[] => {
   return items.map((item) => ({
     id: item.id.videoId,
     title: item.snippet.title,
@@ -24,9 +25,11 @@ const mapYouTubeResponse = (items: any[]): VideoItem[] => {
 const fetchVideos = async ({
   pageParam,
   query,
+  sortBy,
 }: {
-  pageParam: string;
+  pageParam?: string;
   query: string;
+  sortBy: string;
 }) => {
   if (!query) return { items: [], nextPageToken: null };
 
@@ -38,33 +41,28 @@ const fetchVideos = async ({
     url += `&pageToken=${pageParam}`;
   }
 
+  if (sortBy) {
+    url += `&order=${sortBy}`;
+  }
+
   const response = await fetch(url);
   const data = await response.json();
 
-  const validatedVideoItemsResponse = VideoItemResponseSchema.safeParse(data);
+  const validatedVideoItemsResponse =
+    YouTubeSearchResponseSchema.safeParse(data);
 
   if (!validatedVideoItemsResponse.success) {
     throw new Error(validatedVideoItemsResponse.error.message);
   }
 
-  const validatedVideoItems = safeValidateArray(VideoItemSchema, data.items);
-
-  if (!validatedVideoItems.success) {
-    throw new Error(validatedVideoItems.errors.join(", "));
-  }
-
-  if (data.error) {
-    throw new Error(data.error.message || "Błąd API YouTube");
-  }
-
   return {
-    items: mapYouTubeResponse(validatedVideoItems.data),
+    items: mapYouTubeResponse(validatedVideoItemsResponse.data.items),
     nextPageToken: validatedVideoItemsResponse.data.nextPageToken || null,
     totalResults: validatedVideoItemsResponse.data.pageInfo.totalResults,
   };
 };
 
-export function useVideoSearch(query: string) {
+export function useVideoSearch(query: string, sortBy: string) {
   const {
     data,
     error,
@@ -75,7 +73,7 @@ export function useVideoSearch(query: string) {
     refetch,
   } = useInfiniteQuery({
     queryKey: ["videoSearch", query],
-    queryFn: ({ pageParam }) => fetchVideos({ pageParam, query }),
+    queryFn: ({ pageParam }) => fetchVideos({ pageParam, query, sortBy }),
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextPageToken,
     enabled: !!query,

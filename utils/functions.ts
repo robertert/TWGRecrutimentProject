@@ -13,3 +13,15 @@ export const formatNumber = (number: number) => {
   }
   return number.toString();
 };
+
+export const mapSortBy = (sortBy?: string) => {
+  if (!sortBy) return "viewCount";
+  switch (sortBy) {
+    case "Most popular":
+      return "viewCount";
+    case "Upload date: latest":
+      return "date";
+    case "Upload date: oldest":
+      return "date";
+  }
+};

@@ -6,6 +6,7 @@ import { StyleSheet, Text } from "react-native";
 export default function TabsLayout() {
   return (
     <Tabs
+      initialRouteName="search"
       screenOptions={{
         headerShown: false,
         tabBarStyle: {

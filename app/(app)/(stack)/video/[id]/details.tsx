@@ -25,7 +25,7 @@ export default function DetailsScreen() {
             contentFit="scale-down"
           />
           <Text style={styles.statisticsItemValue}>
-            {formatNumber(video?.views || 0)} views
+            {formatNumber(Number(video?.views || 0))} views
           </Text>
         </View>
         <View style={styles.statisticsItem}>
@@ -35,7 +35,7 @@ export default function DetailsScreen() {
             contentFit="scale-down"
           />
           <Text style={styles.statisticsItemValue}>
-            {formatNumber(video?.likes || 0)} likes
+            {formatNumber(Number(video?.likes || 0))} likes
           </Text>
         </View>
       </View>

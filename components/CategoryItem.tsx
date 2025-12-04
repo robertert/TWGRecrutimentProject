@@ -1,17 +1,9 @@
 import { Category, VideoItem } from "../types/types";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
 import { Colors } from "../constants/colors";
 import MovieItem from "./MovieItem";
 import { router } from "expo-router";
 import { useVideoSearch } from "../hooks/useVideoSearch";
-import { useEffect } from "react";
 import CategoryItemSkeleton from "./skeletons/CategoryItemSkeleton";
 
 export default function CategoryItem({
@@ -22,7 +14,8 @@ export default function CategoryItem({
   isLast: boolean;
 }) {
   const { videos, isLoading, error, hasMore, loadMore } = useVideoSearch(
-    category.name
+    category.name,
+    "viewCount"
   );
 
   const renderMovieItem = ({
