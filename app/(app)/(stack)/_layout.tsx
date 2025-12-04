@@ -5,7 +5,7 @@ export default function StackLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="settings" />
-      <Stack.Screen name="video/[id]" />
+      <Stack.Screen name="video/[id]/index" />
     </Stack>
   );
 }

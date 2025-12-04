@@ -6,7 +6,7 @@ import { Colors } from "../constants/colors";
 
 export default function SearchResultItem({ movie }: { movie: Movie }) {
   return (
-    <Pressable onPress={() => router.push(`/video/${movie.id}`)}>
+    <Pressable onPress={() => router.push(`/(app)/(stack)/video/${movie.id}`)}>
       <View style={styles.searchResultItem}>
         <Image
           source={require("../assets/placeholder_thumbnail.png")}

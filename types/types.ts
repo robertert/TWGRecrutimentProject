@@ -9,4 +9,7 @@ export type Movie = {
   author: string;
   thumbnailUrl: string;
   date: string;
+  description: string;
+  views: number;
+  likes: number;
 };

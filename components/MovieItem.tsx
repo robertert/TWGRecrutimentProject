@@ -14,7 +14,7 @@ export default function MovieItem({
   isLast: boolean;
 }) {
   return (
-    <Pressable onPress={() => router.push(`/video/${movie.id}`)}>
+    <Pressable onPress={() => router.push(`/(app)/(stack)/video/${movie.id}`)}>
       <View
         style={[
           styles.movieItem,
