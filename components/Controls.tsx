@@ -51,6 +51,14 @@ export default function Controls({
     resetControlsTimeout,
   });
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/(app)/(stack)/(tabs)/home");
+    }
+  };
+
   return (
     <Pressable
       onPress={toggleControls}
@@ -143,7 +151,7 @@ export default function Controls({
         </Pressable>
 
         <Pressable
-          onPress={() => router.back()}
+          onPress={handleBack}
           style={[
             styles.backButton,
             styles.smallControlButton,

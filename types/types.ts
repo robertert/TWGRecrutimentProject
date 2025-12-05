@@ -5,6 +5,13 @@ export type Category = {
   name: string;
 };
 
+export type NoteItem = {
+  id: string;
+  content: string;
+  timestamp: number;
+  videoId: string;
+};
+
 export const YouTubeRawVideoItemSchema = z.object({
   id: z.string(),
   snippet: z.object({

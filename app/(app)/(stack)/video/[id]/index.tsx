@@ -5,16 +5,14 @@ import { Colors } from "../../../../../constants/colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Controls from "../../../../../components/Controls";
 import { useVideoPlayer } from "../../../../../hooks/useVideoPlayer";
-import { Image } from "expo-image";
-import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import DetailsScreen from "./details";
-import NotesScreen from "./notes";
 import { useVideoSearchDetails } from "../../../../../hooks/useVideoSearchDetails";
 import UserSkeleton from "../../../../../components/skeletons/UserSkeleton";
+import VideoTabsComponent from "../../../../../components/VideoTabs";
+import { useVideoStore } from "../../../../../store/videoStore";
+import { useEffect } from "react";
+import ProfileInfo from "../../../../../components/ProfileInfo";
 
 const videoSource = require("../../../../../assets/video/broadchurch.mp4");
-
-const VideoTabs = createMaterialTopTabNavigator();
 
 export default function VideoScreen() {
   const { id } = useLocalSearchParams();
@@ -43,6 +41,16 @@ export default function VideoScreen() {
     handleVideoLoad,
   } = useVideoPlayer();
 
+  const setCurrentTime = useVideoStore((state) => state.setCurrentTime);
+
+  const setVideoRef = useVideoStore((state) => state.setVideoRef);
+
+  useEffect(() => {
+    if (videoRef) {
+      setVideoRef(videoRef);
+    }
+  }, [videoRef, setVideoRef]);
+
   if (error) {
     return <Text>{error}</Text>;
   }
@@ -57,7 +65,10 @@ export default function VideoScreen() {
           controls={false}
           resizeMode="contain"
           paused={paused}
-          onProgress={(data) => handleVideoProgress(data.currentTime)}
+          onProgress={(data) => {
+            handleVideoProgress(data.currentTime);
+            setCurrentTime(data.currentTime);
+          }}
           onLoad={(data) => handleVideoLoad(data.duration)}
         />
         <Controls
@@ -83,65 +94,11 @@ export default function VideoScreen() {
           <Text numberOfLines={1} ellipsizeMode="tail" style={styles.movieName}>
             {videoDetails?.title}
           </Text>
-          <View style={styles.movieAuthorContainer}>
-            <View style={styles.movieAuthorIconContainer}>
-              <Image
-                source={require("../../../../../assets/icons/person-icon.svg")}
-                style={styles.movieAuthorIcon}
-                contentFit="scale-down"
-              />
-            </View>
-            <Text style={styles.movieAuthor}>{videoDetails?.channelTitle}</Text>
-          </View>
+          <ProfileInfo channelTitle={videoDetails?.channelTitle || ""} />
         </>
       )}
       <View style={styles.materialTopTabsContainer}>
-        <VideoTabs.Navigator
-          screenOptions={{
-            tabBarIndicatorStyle: {
-              backgroundColor: Colors.primary700,
-              height: 2,
-              top: 23,
-            },
-            tabBarActiveTintColor: Colors.primary700,
-            tabBarInactiveTintColor: Colors.primary700,
-            tabBarLabelStyle: {
-              fontFamily: "Poppins-SemiBold",
-              fontSize: 12,
-              textTransform: "none",
-              marginTop: 0,
-              marginBottom: 0,
-            },
-            tabBarItemStyle: {
-              height: 23,
-              justifyContent: "flex-start",
-              paddingVertical: 5,
-            },
-            tabBarStyle: {
-              height: 25,
-              borderTopColor: Colors.secondary,
-              backgroundColor: Colors.primary100,
-              elevation: 0,
-              shadowOpacity: 0,
-              borderBottomWidth: 2,
-              borderBottomColor: Colors.secondary,
-            },
-          }}
-        >
-          <VideoTabs.Screen
-            name="Details"
-            component={DetailsScreen}
-            options={{
-              title: "Details",
-              lazy: false,
-            }}
-          />
-          <VideoTabs.Screen
-            name="Notes"
-            component={NotesScreen}
-            options={{ title: "Notes" }}
-          />
-        </VideoTabs.Navigator>
+        <VideoTabsComponent />
       </View>
     </View>
   );
@@ -165,31 +122,6 @@ const styles = StyleSheet.create({
     color: Colors.primary700,
     marginTop: 20,
     marginHorizontal: 16,
-  },
-  movieAuthorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: 16,
-    marginTop: 12,
-  },
-  movieAuthor: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 14,
-    color: Colors.primary700,
-  },
-  movieAuthorIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: "50%",
-    backgroundColor: Colors.primary700,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 8,
-  },
-  movieAuthorIcon: {
-    width: 20,
-    height: 20,
-    tintColor: Colors.primary100,
   },
   materialTopTabsContainer: {
     flex: 1,
