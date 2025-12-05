@@ -7,21 +7,13 @@ import { router } from "expo-router";
 export default function MovieItem({
   video,
   isFirst,
-  isLast,
 }: {
   video: VideoItem;
   isFirst: boolean;
-  isLast: boolean;
 }) {
   return (
     <Pressable onPress={() => router.push(`/(app)/(stack)/video/${video.id}`)}>
-      <View
-        style={[
-          styles.movieItem,
-          { marginLeft: isFirst ? 24 : 0 },
-          { marginRight: isLast ? 24 : 0 },
-        ]}
-      >
+      <View style={[styles.movieItem, { marginLeft: isFirst ? 24 : 0 }]}>
         <Image
           source={{ uri: video.thumbnail }}
           style={styles.movieItemThumbnail}
@@ -45,6 +37,7 @@ export default function MovieItem({
 const styles = StyleSheet.create({
   movieItem: {
     flex: 1,
+    marginRight: 24,
   },
   movieItemThumbnail: {
     width: 180,

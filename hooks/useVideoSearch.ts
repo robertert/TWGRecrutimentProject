@@ -35,8 +35,8 @@ export function useVideoSearch(
     getNextPageParam: (lastPage) => lastPage.nextPageToken,
     enabled: !!query,
     staleTime: categories.some((category) => category.name === query)
-      ? 1000 * 60 * 5
-      : 1000 * 60 * 60 * 24,
+      ? 1000 * 60 * 60 * 24
+      : 1000 * 60 * 5,
   });
 
   const videos = useMemo(() => {

@@ -1,11 +1,12 @@
 import { Category, VideoItem } from "../types/types";
-import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Colors } from "../constants/colors";
 import MovieItem from "./MovieItem";
 import { router } from "expo-router";
 import { useVideoSearch } from "../hooks/useVideoSearch";
 import CategoryItemSkeleton from "./skeletons/CategoryItemSkeleton";
 import ErrorMessage from "./ErrorMessage";
+import { FlashList } from "@shopify/flash-list";
 
 export default function CategoryItem({
   category,
@@ -25,13 +26,7 @@ export default function CategoryItem({
   }: {
     item: VideoItem;
     index: number;
-  }) => (
-    <MovieItem
-      video={item}
-      isFirst={index === 0}
-      isLast={index === videos.length - 1}
-    />
-  );
+  }) => <MovieItem video={item} isFirst={index === 0} />;
   if (isLoading) {
     return <CategoryItemSkeleton />;
   }
@@ -63,10 +58,9 @@ export default function CategoryItem({
           </Pressable>
         </View>
         <View style={styles.moviesListContainer}>
-          <FlatList
+          <FlashList
             data={videos}
             renderItem={({ item, index }) => renderMovieItem({ item, index })}
-            contentContainerStyle={{ gap: 20 }}
             keyExtractor={(item) => item.id.toString()}
             horizontal
             showsHorizontalScrollIndicator={false}
