@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Platform } from "react-native";
 import type { VideoRef } from "react-native-video";
 import { formatTime } from "../utils/functions";
 import { logger } from "../utils/logger";
+import { showRoutePicker } from "react-airplay";
 
 interface UseVideoControlsParams {
   videoRef: React.RefObject<VideoRef | null>;
@@ -37,8 +39,14 @@ export function useVideoControls({
   };
 
   const toggleAirplay = () => {
-    // tutaj możesz później dodać natywną obsługę AirPlay
-    logger.log("toggleAirplay");
+    if (Platform.OS === "ios") {
+      try {
+        showRoutePicker({ prioritizesVideoDevices: true });
+        resetControlsTimeout();
+      } catch (error) {
+        logger.error("Błąd podczas otwierania menu AirPlay:", error);
+      }
+    }
   };
 
   const toggleVolume = () => {

@@ -26,8 +26,8 @@ export const mapSortBy = (sortBy?: string) => {
       return "viewCount";
     case "Upload date: latest":
       return "date";
-    case "Upload date: oldest":
-      return "date";
+    case "Relevance":
+      return "relevance";
     default:
       return "viewCount";
   }

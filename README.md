@@ -93,6 +93,7 @@ Aplikacja mobilna do nauki oparta na treściach YouTube, stworzona jako zadanie 
   - Włączenia/wyłączenia przypomnień
   - Ustawienia czasu przypomnienia (Time Picker)
   - Codziennych powiadomień o nauce
+  - **Przekierowanie do ekranu głównego** - Kliknięcie w powiadomienie automatycznie przenosi użytkownika do ekranu home
   - ⚠️ **Ograniczenie:** Powiadomienia działają tylko na fizycznym urządzeniu (nie działają w symulatorach/emulatorach)
 - **Profil użytkownika** - Wyświetlanie informacji o użytkowniku
 
