@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, Platform } from "react-native";
 import Video from "react-native-video";
 import { useLocalSearchParams } from "expo-router";
 import { Colors } from "../../../../../constants/colors";
@@ -9,9 +9,10 @@ import { useVideoSearchDetails } from "../../../../../hooks/useVideoSearchDetail
 import UserSkeleton from "../../../../../components/skeletons/UserSkeleton";
 import VideoTabsComponent from "../../../../../components/VideoTabs";
 import { useVideoStore } from "../../../../../store/videoStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import ProfileInfo from "../../../../../components/ProfileInfo";
 import ErrorMessage from "../../../../../components/ErrorMessage";
+import * as ScreenOrientation from "expo-screen-orientation";
 
 const videoSource = require("../../../../../assets/video/broadchurch.mp4");
 
@@ -46,11 +47,32 @@ export default function VideoScreen() {
 
   const setVideoRef = useVideoStore((state) => state.setVideoRef);
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
   useEffect(() => {
     if (videoRef) {
       setVideoRef(videoRef);
     }
   }, [videoRef, setVideoRef]);
+
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      if (isFullscreen) {
+        ScreenOrientation.unlockAsync();
+      } else {
+        ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT_UP
+        );
+      }
+    }
+    return () => {
+      if (Platform.OS === "android") {
+        ScreenOrientation.lockAsync(
+          ScreenOrientation.OrientationLock.PORTRAIT_UP
+        );
+      }
+    };
+  }, [isFullscreen]);
 
   if (error) {
     return (
@@ -70,7 +92,7 @@ export default function VideoScreen() {
           ignoreSilentSwitch="ignore"
           playInBackground={true}
           style={styles.videoPlayer}
-          controls={false}
+          controls={Platform.OS === "android" && isFullscreen}
           resizeMode="contain"
           paused={paused}
           onProgress={(data) => {
@@ -78,6 +100,8 @@ export default function VideoScreen() {
             setCurrentTime(data.currentTime);
           }}
           onLoad={(data) => handleVideoLoad(data.duration)}
+          onFullscreenPlayerWillPresent={() => setIsFullscreen(true)}
+          onFullscreenPlayerWillDismiss={() => setIsFullscreen(false)}
         />
         <Controls
           videoRef={videoRef}

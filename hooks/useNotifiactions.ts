@@ -32,6 +32,9 @@ export function useNotifications() {
     try {
       const hasPermission = await requestPermissions();
       if (!hasPermission) {
+        logger.log(
+          "Brak uprawnień do powiadomień. Włącz powiadomienia w ustawieniach aplikacji."
+        );
         throw new Error(
           "Brak uprawnień do powiadomień. Włącz powiadomienia w ustawieniach aplikacji."
         );
@@ -47,6 +50,9 @@ export function useNotifications() {
           title: "Czas na naukę! 📚",
           body: "Pamiętaj o swojej dzisiejszej sesji nauki.",
           sound: true,
+          data: {
+            screen: "/(app)/(stack)/(tabs)/home",
+          },
         },
         trigger: {
           hour,

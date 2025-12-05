@@ -6,8 +6,9 @@ import { useAuthStore } from "../store/authStore";
 import { View, ActivityIndicator, StatusBar } from "react-native";
 import { Colors } from "../constants/colors";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import * as Notifications from "expo-notifications";
+import { useLastNotificationResponse } from "expo-notifications";
 
-// Zapobiegaj automatycznemu ukryciu splash screen
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
@@ -18,15 +19,11 @@ export default function RootLayout() {
   const segments = useSegments();
   const [isNavigationReady, setIsNavigationReady] = useState(false);
 
-  // Ładowanie czcionek
   const [fontsLoaded, fontError] = useFonts({
     "Poppins-Regular": require("../assets/fonts/Poppins/Poppins-Regular.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins/Poppins-Bold.ttf"),
     "Poppins-Medium": require("../assets/fonts/Poppins/Poppins-Medium.ttf"),
-    "Poppins-Light": require("../assets/fonts/Poppins/Poppins-Light.ttf"),
-    "Poppins-Thin": require("../assets/fonts/Poppins/Poppins-Thin.ttf"),
     "Poppins-SemiBold": require("../assets/fonts/Poppins/Poppins-SemiBold.ttf"),
-    "Poppins-Black": require("../assets/fonts/Poppins/Poppins-Black.ttf"),
   });
 
   useEffect(() => {
@@ -38,6 +35,32 @@ export default function RootLayout() {
   useEffect(() => {
     setIsNavigationReady(true);
   }, []);
+
+  const lastNotificationResponse = useLastNotificationResponse();
+
+  useEffect(() => {
+    if (lastNotificationResponse && isNavigationReady && fontsLoaded) {
+      const data = lastNotificationResponse.notification.request.content.data;
+      if (data?.screen) {
+        router.push(data.screen as string);
+      }
+    }
+  }, [lastNotificationResponse, isNavigationReady, fontsLoaded, router]);
+
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const data = response.notification.request.content.data;
+        if (data?.screen && isNavigationReady && fontsLoaded) {
+          router.push(data.screen as string);
+        }
+      }
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, [isNavigationReady, fontsLoaded, router]);
 
   useEffect(() => {
     if (!isNavigationReady || !fontsLoaded) return;

@@ -1,4 +1,11 @@
-import { Animated, Pressable, StyleSheet, View, Text } from "react-native";
+import {
+  Animated,
+  Pressable,
+  StyleSheet,
+  View,
+  Text,
+  Platform,
+} from "react-native";
 import VideoSlider from "./Slider";
 import { Colors } from "../constants/colors";
 import { Image } from "expo-image";
@@ -119,37 +126,30 @@ export default function Controls({
             tintColor={Colors.primary100}
           />
         </Pressable>
-
-        <Pressable
-          onPress={toggleAirplay}
-          style={[
-            styles.airplayButton,
-            styles.smallControlButton,
-            styles.controlButton,
-          ]}
-        >
-          <Image
-            source={require("../assets/icons/airplay-icon.svg")}
-            style={styles.smallControlIcon}
-            tintColor={Colors.primary100}
-          />
-        </Pressable>
-
-        <Pressable
-          onPress={toggleVolume}
-          style={[
-            styles.volumeButton,
-            styles.smallControlButton,
-            styles.controlButton,
-          ]}
-        >
-          <Image
-            source={require("../assets/icons/volume-icon.svg")}
-            style={styles.smallControlIcon}
-            tintColor={Colors.primary100}
-          />
-        </Pressable>
-
+        <View style={styles.topRightControlsContainer}>
+          {Platform.OS === "ios" && (
+            <Pressable
+              onPress={toggleAirplay}
+              style={[styles.smallControlButton, styles.controlButton]}
+            >
+              <Image
+                source={require("../assets/icons/airplay-icon.svg")}
+                style={styles.smallControlIcon}
+                tintColor={Colors.primary100}
+              />
+            </Pressable>
+          )}
+          <Pressable
+            onPress={toggleVolume}
+            style={[styles.smallControlButton, styles.controlButton]}
+          >
+            <Image
+              source={require("../assets/icons/volume-icon.svg")}
+              style={styles.smallControlIcon}
+              tintColor={Colors.primary100}
+            />
+          </Pressable>
+        </View>
         <Pressable
           onPress={handleBack}
           style={[
@@ -220,7 +220,13 @@ const styles = StyleSheet.create({
     borderRadius: "50%",
     backgroundColor: "rgba(0, 0, 0, 0.25)",
   },
-
+  topRightControlsContainer: {
+    position: "absolute",
+    top: 18,
+    right: 16,
+    flexDirection: "row",
+    gap: 20,
+  },
   fullscreenButton: {
     position: "absolute",
     bottom: 10,
@@ -239,16 +245,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-  },
-  airplayButton: {
-    position: "absolute",
-    top: 18,
-    right: 16,
-  },
-  volumeButton: {
-    position: "absolute",
-    top: 18,
-    right: 56,
   },
   backButton: {
     position: "absolute",

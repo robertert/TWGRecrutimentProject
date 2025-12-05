@@ -14,17 +14,23 @@
       "backgroundColor": "#8D99AE"
     },
     "ios": {
-      "supportsTablet": true,
+      "icon": "./assets/app-icon.png",
+      "supportsTablet": false,
       "bundleIdentifier": "com.robertert.TWGProjekt"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/app-icon.png",
-        "backgroundColor": "#8D99AE"
+        "backgroundColor": "#8D99AE",
+        "resizeMode": "scale-down"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "permissions": [],
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "POST_NOTIFICATIONS"
+      ],
       "package": "com.robertert.TWGProjekt"
     },
     "web": {

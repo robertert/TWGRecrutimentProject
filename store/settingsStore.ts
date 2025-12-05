@@ -19,7 +19,7 @@ export const useSettingsStore = create<SettingsState>()(
       const defaultTimeISO = defaultTime.toISOString();
 
       return {
-        learningRemindersEnabled: true,
+        learningRemindersEnabled: false,
         reminderTime: defaultTimeISO,
         setLearningRemindersEnabled: (enabled: boolean) => {
           try {
