@@ -106,6 +106,7 @@ export default function Search() {
                 renderItem={renderSearchResultItem}
                 keyExtractor={(item) => item.id.toString()}
                 showsVerticalScrollIndicator={false}
+                keyboardDismissMode="on-drag"
                 onEndReached={() => {
                   if (hasMore) {
                     loadMore();

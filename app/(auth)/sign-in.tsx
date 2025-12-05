@@ -3,9 +3,26 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../../constants/colors";
 import { Image } from "expo-image";
 import { useAuthStore } from "../../store/authStore";
+import * as Linking from "expo-linking";
 
 export default function SignIn() {
   const signIn = useAuthStore((state) => state.signIn);
+
+  const handleOpenTerms = async () => {
+    const url = "https://www.youtube.com/static?template=terms";
+    const canOpen = await Linking.canOpenURL(url);
+    if (canOpen) {
+      await Linking.openURL(url);
+    }
+  };
+
+  const handleOpenPrivacy = async () => {
+    const url = "https://policies.google.com/privacy";
+    const canOpen = await Linking.canOpenURL(url);
+    if (canOpen) {
+      await Linking.openURL(url);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
@@ -24,8 +41,14 @@ export default function SignIn() {
       </Pressable>
       <Text style={styles.description}>
         By continuing you agree with {"\n"}
-        <Text style={styles.link}>Terms of Conditions</Text> and{" "}
-        <Text style={styles.link}>Privacy Policy</Text>.
+        <Text style={styles.link} onPress={handleOpenTerms}>
+          Terms of Conditions
+        </Text>{" "}
+        and{" "}
+        <Text style={styles.link} onPress={handleOpenPrivacy}>
+          Privacy Policy
+        </Text>
+        .
       </Text>
     </SafeAreaView>
   );

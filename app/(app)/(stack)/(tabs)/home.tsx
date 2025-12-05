@@ -19,12 +19,14 @@ export default function Home() {
   const [search, setSearch] = useState<string>("");
 
   const searchFunction = (query: string) => {
-    router.replace({
-      pathname: "./search",
-      params: {
-        searchQuery: query,
-      },
-    });
+    if (query.length > 0) {
+      router.replace({
+        pathname: "./search",
+        params: {
+          searchQuery: query,
+        },
+      });
+    }
   };
 
   return (
