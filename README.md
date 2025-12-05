@@ -107,6 +107,13 @@ Aplikacja mobilna do nauki oparta na treściach YouTube, stworzona jako zadanie 
 - iOS Simulator (dla macOS) lub Android Emulator / fizyczne urządzenie
 - YouTube Data API v3 Key
 
+### Klonowanie repozytorium
+
+```bash
+git clone git@github.com:robertert/TWGRecrutimentProject.git
+cd TWGProjekt
+```
+
 ### Instalacja zależności
 
 ```bash
