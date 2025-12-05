@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NoteItem } from "../types/types";
+import { logger } from "../utils/logger";
 
 interface NotesState {
   notes: NoteItem[];
@@ -25,14 +26,14 @@ export const useNotesStore = create<NotesState>()(
         try {
           set({ notes });
         } catch (error) {
-          console.error("Błąd podczas zapisywania notatek:", error);
+          logger.error("Błąd podczas zapisywania notatek:", error);
         }
       },
       addNote: (note: NoteItem) => {
         try {
           set((state) => ({ notes: [...(state.notes || []), note] }));
         } catch (error) {
-          console.error("Błąd podczas dodawania notatki:", error);
+          logger.error("Błąd podczas dodawania notatki:", error);
         }
       },
       addNoteWithProgress: (
@@ -42,14 +43,14 @@ export const useNotesStore = create<NotesState>()(
       ) => {
         try {
           const newNote: NoteItem = {
-            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
             content,
             timestamp: currentTime,
             videoId,
           };
           set((state) => ({ notes: [...(state.notes || []), newNote] }));
         } catch (error) {
-          console.error("Błąd podczas dodawania notatki z postępem:", error);
+          logger.error("Błąd podczas dodawania notatki z postępem:", error);
         }
       },
       deleteNote: (id: string) => {
@@ -58,14 +59,14 @@ export const useNotesStore = create<NotesState>()(
             notes: state.notes?.filter((note) => note.id !== id) || [],
           }));
         } catch (error) {
-          console.error("Błąd podczas usuwania notatki:", error);
+          logger.error("Błąd podczas usuwania notatki:", error);
         }
       },
       getNotesByVideoId: (videoId: string) => {
         try {
           return get().notes.filter((note) => note.videoId === videoId);
         } catch (error) {
-          console.error("Błąd podczas pobierania notatek:", error);
+          logger.error("Błąd podczas pobierania notatek:", error);
           return [];
         }
       },
@@ -73,7 +74,7 @@ export const useNotesStore = create<NotesState>()(
         try {
           set({ notes: [] });
         } catch (error) {
-          console.error("Błąd podczas resetowania notatek:", error);
+          logger.error("Błąd podczas resetowania notatek:", error);
         }
       },
     }),
@@ -82,7 +83,7 @@ export const useNotesStore = create<NotesState>()(
       storage: createJSONStorage(() => AsyncStorage),
       onRehydrateStorage: () => (state, error) => {
         if (error) {
-          console.error("Błąd podczas wczytywania notatek z pamięci:", error);
+          logger.error("Błąd podczas wczytywania notatek z pamięci:", error);
         }
       },
     }

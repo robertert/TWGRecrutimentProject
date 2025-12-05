@@ -1,6 +1,6 @@
 import {
   VideoItem,
-  YouTubeSeachResponse,
+  YouTubeSearchResponse,
   YouTubeSearchResponseSchema,
   YouTubeRawVideoItemSchema,
   YouTubeRawVideoItem,
@@ -11,6 +11,12 @@ const SEARCH_BASE_URL = "https://www.googleapis.com/youtube/v3/search";
 const VIDEOS_BASE_URL = "https://www.googleapis.com/youtube/v3/videos";
 const API_KEY = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY;
 
+if (!API_KEY) {
+  throw new Error(
+    "EXPO_PUBLIC_YOUTUBE_API_KEY is not set. Please add it to your .env file."
+  );
+}
+
 export interface SearchVideosParams {
   query: string;
   sortBy?: string;
@@ -19,7 +25,7 @@ export interface SearchVideosParams {
 }
 
 const mapSearchResponse = (
-  items: YouTubeSeachResponse["items"]
+  items: YouTubeSearchResponse["items"]
 ): VideoItem[] => {
   return items.map((item) => ({
     id: item.id.videoId,

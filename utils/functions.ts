@@ -28,5 +28,16 @@ export const mapSortBy = (sortBy?: string) => {
       return "date";
     case "Upload date: oldest":
       return "date";
+    default:
+      return "viewCount";
   }
+};
+
+export const formatDateString = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("pl-PL", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
 };

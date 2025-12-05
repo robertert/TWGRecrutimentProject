@@ -93,6 +93,7 @@ Aplikacja mobilna do nauki oparta na treściach YouTube, stworzona jako zadanie 
   - Włączenia/wyłączenia przypomnień
   - Ustawienia czasu przypomnienia (Time Picker)
   - Codziennych powiadomień o nauce
+  - ⚠️ **Ograniczenie:** Powiadomienia działają tylko na fizycznym urządzeniu (nie działają w symulatorach/emulatorach)
 - **Profil użytkownika** - Wyświetlanie informacji o użytkowniku
 
 ## 🛠️ Installation & Setup
@@ -137,6 +138,20 @@ EXPO_PUBLIC_YOUTUBE_API_KEY=twoj_klucz_api_youtube
 
 Aplikacja używa `react-native-video`, która wymaga natywnego kodu. **Nie można uruchomić tej aplikacji w Expo Go**. Musisz użyć Development Build.
 
+### Prebuild (wymagane przed pierwszym uruchomieniem)
+
+Przed pierwszym uruchomieniem aplikacji musisz wykonać prebuild, który wygeneruje natywne pliki dla iOS i Android:
+
+```bash
+# Wykonaj prebuild
+npx expo prebuild
+
+# Lub z czyszczeniem istniejących plików natywnych
+npx expo prebuild --clean
+```
+
+**Uwaga:** Prebuild generuje foldery `ios/` i `android/` z natywnym kodem. Te foldery są wymagane dla aplikacji używających natywnych modułów.
+
 ### Uruchomienie aplikacji
 
 #### iOS
@@ -146,12 +161,20 @@ Aplikacja używa `react-native-video`, która wymaga natywnego kodu. **Nie możn
 npx expo run:ios
 ```
 
+**Uwagi:**
+
+- Aby zbudować aplikację na fizycznym urządzeniu iOS, musisz skonfigurować code signing w Xcode. Szczegółowe instrukcje znajdziesz w [dokumentacji Expo o konfiguracji code signing](https://github.com/expo/fyi/blob/main/setup-xcode-signing.md).
+
+- ⚠️ **Powiadomienia działają tylko na fizycznym urządzeniu** - nie działają w iOS Simulator. Aby przetestować funkcjonalność powiadomień, musisz zbudować aplikację na fizycznym urządzeniu iOS.
+
 #### Android
 
 ```bash
 # Uruchom Development Build na Android
 npx expo run:android
 ```
+
+**Uwaga:** ⚠️ **Powiadomienia działają tylko na fizycznym urządzeniu** - nie działają w Android Emulator. Aby przetestować funkcjonalność powiadomień, musisz zbudować aplikację na fizycznym urządzeniu Android.
 
 ### Pierwsze uruchomienie
 
@@ -321,6 +344,7 @@ return allVideos.filter((video) => {
 - Wymagany jest **YouTube Data API Key** w zmiennych środowiskowych
 - Notatki są przechowywane lokalnie w AsyncStorage
 - Powiadomienia wymagają uprawnień na urządzeniu
+- ⚠️ **Powiadomienia działają tylko na fizycznym urządzeniu** - nie działają w iOS Simulator ani Android Emulator
 - Aplikacja używa czcionki Poppins (dołączone w `assets/fonts/`)
 
 ## 📄 Licencja

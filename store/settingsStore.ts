@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logger } from "../utils/logger";
 
 interface SettingsState {
   learningRemindersEnabled: boolean;
@@ -24,7 +25,7 @@ export const useSettingsStore = create<SettingsState>()(
           try {
             set({ learningRemindersEnabled: enabled });
           } catch (error) {
-            console.error(
+            logger.error(
               "Błąd podczas zapisywania ustawień przypomnień:",
               error
             );
@@ -34,7 +35,7 @@ export const useSettingsStore = create<SettingsState>()(
           try {
             set({ reminderTime: time.toISOString() });
           } catch (error) {
-            console.error(
+            logger.error(
               "Błąd podczas zapisywania czasu przypomnienia:",
               error
             );
@@ -51,7 +52,7 @@ export const useSettingsStore = create<SettingsState>()(
             }
             return date;
           } catch (error) {
-            console.error(
+            logger.error(
               "Błąd podczas odczytywania czasu przypomnienia:",
               error
             );
@@ -67,7 +68,7 @@ export const useSettingsStore = create<SettingsState>()(
       storage: createJSONStorage(() => AsyncStorage),
       onRehydrateStorage: () => (state, error) => {
         if (error) {
-          console.error("Błąd podczas wczytywania ustawień z pamięci:", error);
+          logger.error("Błąd podczas wczytywania ustawień z pamięci:", error);
         }
       },
     }

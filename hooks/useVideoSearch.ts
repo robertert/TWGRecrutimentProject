@@ -35,8 +35,8 @@ export function useVideoSearch(
     getNextPageParam: (lastPage) => lastPage.nextPageToken,
     enabled: !!query,
     staleTime: categories.some((category) => category.name === query)
-      ? 1000 * 60 * 60 * 24
-      : 1000 * 60 * 5,
+      ? 1000 * 60 * 60 * 1 // 1 hour for categories (as per README)
+      : 1000 * 60 * 5, // 5 minutes for searches
   });
 
   const videos = useMemo(() => {
@@ -44,7 +44,7 @@ export function useVideoSearch(
 
     const allVideos = data.pages.flatMap((page) => page.items);
 
-    const seen = new Set();
+    const seen = new Set<string>();
     return allVideos.filter((video) => {
       if (seen.has(video.id)) return false;
       seen.add(video.id);

@@ -3,6 +3,7 @@ import { VideoItem } from "../types/types";
 import { Pressable, View, StyleSheet, Text } from "react-native";
 import { Image } from "expo-image";
 import { Colors } from "../constants/colors";
+import { formatDateString } from "../utils/functions";
 
 export default function SearchResultItem({ video }: { video: VideoItem }) {
   return (
@@ -27,7 +28,9 @@ export default function SearchResultItem({ video }: { video: VideoItem }) {
             {video.title}
           </Text>
         </View>
-        <Text style={styles.searchResultItemDate}>{video.publishedAt}</Text>
+        <Text style={styles.searchResultItemDate}>
+          {formatDateString(video.publishedAt)}
+        </Text>
       </View>
     </Pressable>
   );

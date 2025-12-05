@@ -11,6 +11,7 @@ import TimePickerModal from "../../../components/TimePickerModal";
 import { useNotifications } from "../../../hooks/useNotifiactions";
 import { useSettingsStore } from "../../../store/settingsStore";
 import { formatTimeDate } from "../../../utils/functions";
+import { logger } from "../../../utils/logger";
 
 export default function Settings() {
   const {
@@ -46,7 +47,7 @@ export default function Settings() {
           "Nie udało się ustawić przypomnienia. Sprawdź uprawnienia do powiadomień w ustawieniach aplikacji.",
           [{ text: "OK" }]
         );
-        console.error("Błąd podczas ustawiania przypomnienia:", error);
+        logger.error("Błąd podczas ustawiania przypomnienia:", error);
       } finally {
         setIsLoading(false);
       }
@@ -77,7 +78,7 @@ export default function Settings() {
           : "Nie udało się wyłączyć przypomnień.",
         [{ text: "OK" }]
       );
-      console.error("Błąd podczas zmiany przypomnień:", error);
+      logger.error("Błąd podczas zmiany przypomnień:", error);
 
       setLearningRemindersEnabled(previousValue);
     } finally {

@@ -1,6 +1,7 @@
-//import * as Notifications from "expo-notifications";
+import * as Notifications from "expo-notifications";
 import { isSimulator } from "../constants/flags";
-/*
+import { logger } from "../utils/logger";
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -10,7 +11,7 @@ Notifications.setNotificationHandler({
     shouldShowList: true,
   }),
 });
-    
+
 export function useNotifications() {
   const requestPermissions = async () => {
     try {
@@ -22,19 +23,18 @@ export function useNotifications() {
       }
       return true;
     } catch (error) {
-      console.error("Błąd podczas sprawdzania uprawnień:", error);
+      logger.error("Błąd podczas sprawdzania uprawnień:", error);
       throw new Error("Nie udało się sprawdzić uprawnień do powiadomień.");
     }
   };
 
   const scheduleReminder = async (date: Date) => {
-
-  
-    
     try {
       const hasPermission = await requestPermissions();
       if (!hasPermission) {
-        throw new Error("Brak uprawnień do powiadomień. Włącz powiadomienia w ustawieniach aplikacji.");
+        throw new Error(
+          "Brak uprawnień do powiadomień. Włącz powiadomienia w ustawieniach aplikacji."
+        );
       }
 
       await cancelReminder();
@@ -55,54 +55,54 @@ export function useNotifications() {
         },
       });
 
-      console.log(`Zaplanowano powiadomienie na ${hour}:${minute}`);
+      logger.log(`Zaplanowano powiadomienie na ${hour}:${minute}`);
     } catch (error) {
-      console.error("Błąd podczas planowania powiadomienia:", error);
+      logger.error("Błąd podczas planowania powiadomienia:", error);
       throw error;
     }
   };
 
   const cancelReminder = async () => {
-
-    
     try {
       await Notifications.cancelAllScheduledNotificationsAsync();
-      console.log("Anulowano powiadomienia");
+      logger.log("Anulowano powiadomienia");
     } catch (error) {
-      console.error("Błąd podczas anulowania powiadomień:", error);
+      logger.error("Błąd podczas anulowania powiadomień:", error);
       throw new Error("Nie udało się anulować powiadomień.");
     }
   };
 
   return { scheduleReminder, cancelReminder };
 }
-*/
+
+/*
 export function useNotifications() {
   const scheduleReminder = async (date: Date) => {
     if (isSimulator) {
-      console.log("Simulator detected, notifications will not be scheduled");
+      logger.log("Simulator detected, notifications will not be scheduled");
       return;
     }
     try {
       return Promise.resolve();
     } catch (error) {
-      console.error("Błąd podczas planowania powiadomienia:", error);
+      logger.error("Błąd podczas planowania powiadomienia:", error);
       throw error;
     }
   };
 
   const cancelReminder = async () => {
     if (isSimulator) {
-      console.log("Simulator detected, notifications will not be canceled");
+      logger.log("Simulator detected, notifications will not be canceled");
       return;
     }
     try {
       return Promise.resolve();
     } catch (error) {
-      console.error("Błąd podczas anulowania powiadomień:", error);
+      logger.error("Błąd podczas anulowania powiadomień:", error);
       throw error;
     }
   };
 
   return { scheduleReminder, cancelReminder };
 }
+*/

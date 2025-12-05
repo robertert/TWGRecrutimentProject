@@ -23,6 +23,7 @@ export default function Search() {
   const [sortBy, setSortBy] = useState<string>("Most popular");
   const [sortByText, setSortByText] = useState<string>("Most popular");
   const [isFilterModalVisible, setIsFilterModalVisible] = useState(false);
+  const [tempSortBy, setTempSortBy] = useState<string>(sortBy);
 
   const {
     videos,
@@ -40,6 +41,12 @@ export default function Search() {
     setQuery(searchQuery as string);
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (isFilterModalVisible) {
+      setTempSortBy(sortBy);
+    }
+  }, [isFilterModalVisible, sortBy]);
+
   const searchFunction = (query: string) => {
     setQuery(query);
   };
@@ -55,9 +62,11 @@ export default function Search() {
 
   const closeFilterModal = (confirm: boolean) => {
     if (confirm) {
-      setSortBy(sortBy);
-      setSortByText(sortBy);
+      setSortBy(tempSortBy);
+      setSortByText(tempSortBy);
       handleRefresh();
+    } else {
+      setTempSortBy(sortBy);
     }
     setIsFilterModalVisible(false);
   };
@@ -74,7 +83,7 @@ export default function Search() {
           <>
             <Text style={styles.searchResultText}>
               {totalResults} results found for{" "}
-              <Text style={styles.searchQuery}>"{search}"</Text>
+              <Text style={styles.searchQuery}>"{query}"</Text>
             </Text>
             <Pressable onPress={() => setIsFilterModalVisible(true)}>
               <Text style={styles.sortByText}>
@@ -104,7 +113,7 @@ export default function Search() {
                 ref={flashListRef}
                 data={videos}
                 renderItem={renderSearchResultItem}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.id}
                 showsVerticalScrollIndicator={false}
                 keyboardDismissMode="on-drag"
                 onEndReached={() => {
@@ -133,8 +142,8 @@ export default function Search() {
       <FilterModal
         visible={isFilterModalVisible}
         onClose={closeFilterModal}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
+        sortBy={tempSortBy}
+        setSortBy={setTempSortBy}
       />
     </SafeAreaView>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { VideoRef } from "react-native-video";
 import { formatTime } from "../utils/functions";
+import { logger } from "../utils/logger";
 
 interface UseVideoControlsParams {
   videoRef: React.RefObject<VideoRef | null>;
@@ -37,7 +38,7 @@ export function useVideoControls({
 
   const toggleAirplay = () => {
     // tutaj możesz później dodać natywną obsługę AirPlay
-    console.log("toggleAirplay");
+    logger.log("toggleAirplay");
   };
 
   const toggleVolume = () => {

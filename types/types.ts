@@ -90,7 +90,7 @@ export const YouTubeSearchResponseSchema = z.object({
   error: z.object({ message: z.string() }).optional(),
 });
 
-export type YouTubeSeachResponse = z.infer<typeof YouTubeSearchResponseSchema>;
+export type YouTubeSearchResponse = z.infer<typeof YouTubeSearchResponseSchema>;
 
 export interface VideoItem {
   id: string;

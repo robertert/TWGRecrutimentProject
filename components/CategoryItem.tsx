@@ -61,7 +61,7 @@ export default function CategoryItem({
           <FlashList
             data={videos}
             renderItem={({ item, index }) => renderMovieItem({ item, index })}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
             onEndReached={() => {

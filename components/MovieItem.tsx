@@ -3,6 +3,7 @@ import { VideoItem } from "../types/types";
 import { Image } from "expo-image";
 import { Colors } from "../constants/colors";
 import { router } from "expo-router";
+import { formatDateString } from "../utils/functions";
 
 export default function MovieItem({
   video,
@@ -28,7 +29,9 @@ export default function MovieItem({
         >
           {video.title}
         </Text>
-        <Text style={styles.movieItemDate}>{video.publishedAt}</Text>
+        <Text style={styles.movieItemDate}>
+          {formatDateString(video.publishedAt)}
+        </Text>
       </View>
     </Pressable>
   );

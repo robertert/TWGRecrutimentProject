@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import Video from "react-native-video";
 import { useLocalSearchParams } from "expo-router";
 import { Colors } from "../../../../../constants/colors";
@@ -66,6 +66,9 @@ export default function VideoScreen() {
         <Video
           ref={videoRef}
           source={videoSource}
+          allowsExternalPlayback={true}
+          ignoreSilentSwitch="ignore"
+          playInBackground={true}
           style={styles.videoPlayer}
           controls={false}
           resizeMode="contain"

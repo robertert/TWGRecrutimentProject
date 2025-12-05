@@ -4,33 +4,48 @@ import { Colors } from "../../constants/colors";
 import { Image } from "expo-image";
 import { useAuthStore } from "../../store/authStore";
 import * as Linking from "expo-linking";
+import { logger } from "../../utils/logger";
 
 export default function SignIn() {
   const signIn = useAuthStore((state) => state.signIn);
 
   const handleOpenTerms = async () => {
     const url = "https://www.youtube.com/static?template=terms";
-    const canOpen = await Linking.canOpenURL(url);
-    if (canOpen) {
-      await Linking.openURL(url);
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (canOpen) {
+        await Linking.openURL(url);
+      } else {
+        logger.warn("Cannot open URL:", url);
+      }
+    } catch (error) {
+      logger.error("Error opening terms URL:", error);
     }
   };
 
   const handleOpenPrivacy = async () => {
     const url = "https://policies.google.com/privacy";
-    const canOpen = await Linking.canOpenURL(url);
-    if (canOpen) {
-      await Linking.openURL(url);
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+      if (canOpen) {
+        await Linking.openURL(url);
+      } else {
+        logger.warn("Cannot open URL:", url);
+      }
+    } catch (error) {
+      logger.error("Error opening privacy URL:", error);
     }
   };
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
       <Image source={require("../../assets/logo.png")} style={styles.logo} />
-      <Image
-        source={require("../../assets/app-icon.svg")}
-        style={styles.icon}
-      />
+      <View style={styles.iconContainer}>
+        <Image
+          source={require("../../assets/app-icon.svg")}
+          style={styles.icon}
+        />
+      </View>
       <Text style={styles.title}>
         Welcome to the best{"\n"} YouTube-based learning{"\n"} application.
       </Text>
@@ -67,15 +82,16 @@ const styles = StyleSheet.create({
     marginTop: 60,
     alignSelf: "center",
   },
-
+  iconContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   icon: {
     height: 128,
     width: 128,
-    marginTop: 100,
-    alignSelf: "center",
   },
   title: {
-    marginTop: 140,
     fontFamily: "Poppins-SemiBold",
     fontSize: 22,
     color: Colors.primary100,
@@ -102,6 +118,7 @@ const styles = StyleSheet.create({
     color: Colors.primary100,
     textAlign: "center",
     marginTop: 20,
+    marginBottom: 54,
   },
   link: {
     textDecorationLine: "underline",

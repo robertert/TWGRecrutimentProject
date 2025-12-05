@@ -58,7 +58,7 @@ export default function NotesScreen() {
                 setCurrentTime(note.timestamp);
               }}
             >
-              <View key={note.id} style={styles.noteItem}>
+              <View style={styles.noteItem}>
                 <Text style={styles.noteTimestamp}>
                   {formatTime(note.timestamp)}
                 </Text>
@@ -94,7 +94,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.primary100,
   },
-  inputContainer: {},
+  inputContainer: {
+    marginBottom: 20,
+  },
   input: {
     borderWidth: 1,
     borderColor: Colors.secondary,
