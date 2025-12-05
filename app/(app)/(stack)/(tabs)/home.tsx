@@ -13,12 +13,7 @@ import SearchBar from "../../../../components/SearchBar";
 import CategoryItem from "../../../../components/CategoryItem";
 import { router } from "expo-router";
 import { useState } from "react";
-
-const categories = [
-  { id: 1, name: "Typescript" },
-  { id: 2, name: "React" },
-  { id: 3, name: "React Native" },
-];
+import { categories } from "../../../../constants/categories";
 
 export default function Home() {
   const [search, setSearch] = useState<string>("");

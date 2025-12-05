@@ -19,9 +19,7 @@ export default function SearchBar({
       clearTimeout(timeoutRef.current);
     }
     timeoutRef.current = setTimeout(() => {
-      if (value.length > 0) {
-        searchFunction?.(value);
-      }
+      searchFunction?.(value);
     }, 1000);
 
     return () => {

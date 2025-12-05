@@ -12,6 +12,29 @@ export type NoteItem = {
   videoId: string;
 };
 
+export interface SearchVideosResponse {
+  items: VideoItem[];
+  nextPageToken: string | undefined;
+  totalResults: number;
+}
+export interface UseVideoSearchResponse {
+  videos: VideoItem[];
+  isLoading: boolean;
+  isLoadingMore: boolean;
+  totalResults: number;
+  error: string | null;
+  searchVideos: () => void;
+  loadMore: () => void;
+  hasMore: boolean;
+}
+
+export interface UseVideoSearchDetailsResponse {
+  videoDetails: VideoItem | null;
+  isLoading: boolean;
+  error: string | null;
+  refresh: () => void;
+}
+
 export const YouTubeRawVideoItemSchema = z.object({
   id: z.string(),
   snippet: z.object({

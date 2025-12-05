@@ -11,6 +11,7 @@ import { VideoItem } from "../../../../types/types";
 import { useVideoSearch } from "../../../../hooks/useVideoSearch";
 import { mapSortBy } from "../../../../utils/functions";
 import FilterModal from "../../../../components/FilterModal";
+import ErrorMessage from "../../../../components/ErrorMessage";
 
 export default function Search() {
   const { searchQuery } = useLocalSearchParams();
@@ -47,12 +48,16 @@ export default function Search() {
     <SearchResultItem video={item} />
   );
 
+  const handleRefresh = () => {
+    searchVideos();
+    flashListRef.current?.scrollToIndex({ index: 0 });
+  };
+
   const closeFilterModal = (confirm: boolean) => {
     if (confirm) {
       setSortBy(sortBy);
       setSortByText(sortBy);
-      searchVideos();
-      flashListRef.current?.scrollToIndex({ index: 0 });
+      handleRefresh();
     }
     setIsFilterModalVisible(false);
   };
@@ -93,7 +98,7 @@ export default function Search() {
                 <SearchResultItemSkeleton />
               </View>
             ) : error ? (
-              <Text>{error}</Text>
+              <ErrorMessage message={error} onRetry={() => searchVideos()} />
             ) : (
               <FlashList
                 ref={flashListRef}
@@ -110,6 +115,15 @@ export default function Search() {
                 ListFooterComponent={() =>
                   isLoadingMore ? <SearchResultItemSkeleton /> : null
                 }
+                ListEmptyComponent={() => (
+                  <View style={styles.searchResultListEmpty}>
+                    <Text style={styles.searchResultListEmptyText}>
+                      No results found
+                    </Text>
+                  </View>
+                )}
+                refreshing={isLoading}
+                onRefresh={handleRefresh}
               />
             )}
           </View>

@@ -1,63 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  VideoItem,
-  YouTubeRawVideoItemSchema,
-  YouTubeRawVideoItem,
-} from "../types/types";
 import { useVideoStore } from "../store/videoStore";
 import { useEffect } from "react";
+import { getVideoDetails } from "../services/youtubeApiService";
+import { UseVideoSearchDetailsResponse } from "../types/types";
 
-const BASE_URL = "https://www.googleapis.com/youtube/v3/videos";
-const API_KEY = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY;
-
-const mapYouTubeResponse = (item: YouTubeRawVideoItem): VideoItem => {
-  return {
-    id: item.id,
-    title: item.snippet.title,
-    description: item.snippet.description,
-    thumbnail: item.snippet.thumbnails.medium.url,
-    channelTitle: item.snippet.channelTitle,
-    publishedAt: item.snippet.publishedAt,
-    views: item.statistics?.viewCount || "0",
-    likes: item.statistics?.likeCount || "0",
-  };
-};
-
-const fetchVideoDetails = async (videoId: string) => {
-  if (!videoId) return null;
-
-  const url = `${BASE_URL}?part=snippet,statistics&type=video&id=${encodeURIComponent(
-    videoId
-  )}&key=${API_KEY}`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-  if (!data.items || data.items.length === 0) {
-    throw new Error("Nie znaleziono wideo");
-  }
-
-  const validatedVideoItems = YouTubeRawVideoItemSchema.safeParse(
-    data.items[0]
-  );
-  if (!validatedVideoItems.success) {
-    throw new Error(validatedVideoItems.error.message);
-  }
-  if (data.error) {
-    throw new Error(data.error.message || "Błąd API YouTube");
-  }
-
-  return mapYouTubeResponse(validatedVideoItems.data);
-};
-
-export function useVideoSearchDetails(videoId: string) {
+/**
+ * Hook to fetch video details from YouTube API
+ * @param videoId - video id
+ * @returns {UseVideoSearchDetailsResponse} - response from hook
+ */
+export function useVideoSearchDetails(
+  videoId: string
+): UseVideoSearchDetailsResponse {
   const setVideo = useVideoStore((state) => state.setVideo);
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["videoDetails", videoId],
-    queryFn: () => fetchVideoDetails(videoId),
+    queryFn: () => getVideoDetails(videoId),
     enabled: !!videoId,
-    staleTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 1, // 1 minute
   });
 
   useEffect(() => {

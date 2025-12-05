@@ -7,6 +7,11 @@ export const formatTime = (timeInSeconds: number) => {
   return `${minutes}:${seconds}`;
 };
 
+export const formatTimeDate = (rawDate: Date) => {
+  const hours = rawDate.getHours().toString().padStart(2, "0");
+  const minutes = rawDate.getMinutes().toString().padStart(2, "0");
+  return `${hours}:${minutes}`;
+};
 export const formatNumber = (number: number) => {
   if (number >= 1000000) {
     return (number / 1000000).toFixed(1) + "M";

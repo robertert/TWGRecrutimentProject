@@ -1,68 +1,20 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  VideoItem,
-  YouTubeSeachResponse,
-  YouTubeSearchResponseSchema,
-} from "../types/types";
 import { useMemo } from "react";
+import { searchVideos } from "../services/youtubeApiService";
+import { categories } from "../constants/categories";
+import { UseVideoSearchResponse } from "../types/types";
 
-const BASE_URL = "https://www.googleapis.com/youtube/v3/search";
-const API_KEY = process.env.EXPO_PUBLIC_YOUTUBE_API_KEY;
+/**
+ * Hook to search videos on YouTube
+ * @param query - search query
+ * @param sortBy - sort by field
+ * @returns {UseVideoSearchResponse} - response from hook
+ */
 
-const mapYouTubeResponse = (
-  items: YouTubeSeachResponse["items"]
-): VideoItem[] => {
-  return items.map((item) => ({
-    id: item.id.videoId,
-    title: item.snippet.title,
-    description: item.snippet.description,
-    thumbnail: item.snippet.thumbnails.medium.url,
-    channelTitle: item.snippet.channelTitle,
-    publishedAt: item.snippet.publishedAt,
-  }));
-};
-
-const fetchVideos = async ({
-  pageParam,
-  query,
-  sortBy,
-}: {
-  pageParam?: string;
-  query: string;
-  sortBy: string;
-}) => {
-  if (!query) return { items: [], nextPageToken: null };
-
-  let url = `${BASE_URL}?part=snippet&type=video&maxResults=10&q=${encodeURIComponent(
-    query
-  )}&key=${API_KEY}`;
-
-  if (pageParam) {
-    url += `&pageToken=${pageParam}`;
-  }
-
-  if (sortBy) {
-    url += `&order=${sortBy}`;
-  }
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-  const validatedVideoItemsResponse =
-    YouTubeSearchResponseSchema.safeParse(data);
-
-  if (!validatedVideoItemsResponse.success) {
-    throw new Error(validatedVideoItemsResponse.error.message);
-  }
-
-  return {
-    items: mapYouTubeResponse(validatedVideoItemsResponse.data.items),
-    nextPageToken: validatedVideoItemsResponse.data.nextPageToken || null,
-    totalResults: validatedVideoItemsResponse.data.pageInfo.totalResults,
-  };
-};
-
-export function useVideoSearch(query: string, sortBy: string) {
+export function useVideoSearch(
+  query: string,
+  sortBy: string
+): UseVideoSearchResponse {
   const {
     data,
     error,
@@ -72,12 +24,19 @@ export function useVideoSearch(query: string, sortBy: string) {
     isPending,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["videoSearch", query],
-    queryFn: ({ pageParam }) => fetchVideos({ pageParam, query, sortBy }),
+    queryKey: ["videoSearch", query, sortBy],
+    queryFn: ({ pageParam }) =>
+      searchVideos({
+        query,
+        sortBy,
+        pageToken: pageParam as string | undefined,
+      }),
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextPageToken,
     enabled: !!query,
-    staleTime: 1000 * 60 * 5,
+    staleTime: categories.some((category) => category.name === query)
+      ? 1000 * 60 * 5
+      : 1000 * 60 * 60 * 24,
   });
 
   const videos = useMemo(() => {

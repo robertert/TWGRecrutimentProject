@@ -1,40 +1,88 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { Image } from "expo-image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { Colors } from "../../../constants/colors";
 import ProfileInfo from "../../../components/ProfileInfo";
 import AnimatedSwitch from "../../../components/AnimatedSwitch";
 import TimePickerModal from "../../../components/TimePickerModal";
+import { useNotifications } from "../../../hooks/useNotifiactions";
+import { useSettingsStore } from "../../../store/settingsStore";
+import { formatTimeDate } from "../../../utils/functions";
 
 export default function Settings() {
-  const [checked, setChecked] = useState(true);
+  const {
+    learningRemindersEnabled,
+    reminderTime,
+    setLearningRemindersEnabled,
+    setReminderTime,
+    getReminderTimeAsDate,
+  } = useSettingsStore();
+
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [date, setDate] = useState(() => getReminderTimeAsDate());
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [timeString, setTimeString] = useState("10:00");
+  const { scheduleReminder, cancelReminder } = useNotifications();
 
-  const [date, setDate] = useState(() => {
-    const d = new Date();
-    d.setHours(10, 0, 0, 0);
-    return d;
-  });
+  useEffect(() => {
+    setDate(getReminderTimeAsDate());
+  }, [reminderTime, getReminderTimeAsDate]);
 
-  const formatTime = (rawDate: Date) => {
-    const hours = rawDate.getHours().toString().padStart(2, "0");
-    const minutes = rawDate.getMinutes().toString().padStart(2, "0");
-    return `${hours}:${minutes}`;
-  };
+  const timeString = formatTimeDate(date);
 
-  const handleTimeConfirm = (selectedTime: Date) => {
+  const handleTimeConfirm = async (selectedTime: Date) => {
     setDate(selectedTime);
-    setTimeString(formatTime(selectedTime));
+    setReminderTime(selectedTime);
+    if (learningRemindersEnabled) {
+      try {
+        setIsLoading(true);
+        await scheduleReminder(selectedTime);
+      } catch (error) {
+        Alert.alert(
+          "Błąd",
+          "Nie udało się ustawić przypomnienia. Sprawdź uprawnienia do powiadomień w ustawieniach aplikacji.",
+          [{ text: "OK" }]
+        );
+        console.error("Błąd podczas ustawiania przypomnienia:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
     setShowTimePicker(false);
   };
 
   const handleTimeCancel = () => {
     setShowTimePicker(false);
+  };
+
+  const handleReminderChange = async (checked: boolean) => {
+    const previousValue = learningRemindersEnabled;
+    setLearningRemindersEnabled(checked);
+
+    try {
+      setIsLoading(true);
+      if (checked) {
+        await scheduleReminder(date);
+      } else {
+        await cancelReminder();
+      }
+    } catch (error) {
+      Alert.alert(
+        "Błąd",
+        checked
+          ? "Nie udało się włączyć przypomnień. Sprawdź uprawnienia do powiadomień w ustawieniach aplikacji."
+          : "Nie udało się wyłączyć przypomnień.",
+        [{ text: "OK" }]
+      );
+      console.error("Błąd podczas zmiany przypomnień:", error);
+
+      setLearningRemindersEnabled(previousValue);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -79,7 +127,10 @@ export default function Settings() {
             </View>
           </Pressable>
 
-          <AnimatedSwitch checked={checked} onCheckedChange={setChecked} />
+          <AnimatedSwitch
+            checked={learningRemindersEnabled}
+            onCheckedChange={handleReminderChange}
+          />
         </View>
 
         <Text style={styles.settingsItemDescription}>

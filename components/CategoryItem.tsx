@@ -5,6 +5,7 @@ import MovieItem from "./MovieItem";
 import { router } from "expo-router";
 import { useVideoSearch } from "../hooks/useVideoSearch";
 import CategoryItemSkeleton from "./skeletons/CategoryItemSkeleton";
+import ErrorMessage from "./ErrorMessage";
 
 export default function CategoryItem({
   category,
@@ -35,7 +36,12 @@ export default function CategoryItem({
     return <CategoryItemSkeleton />;
   }
   if (error) {
-    return <Text>{error}</Text>;
+    return (
+      <View style={styles.categoryItem}>
+        <Text style={styles.categoryItemTitle}>{category.name}</Text>
+        <ErrorMessage message={error} onRetry={loadMore} />
+      </View>
+    );
   }
 
   return (

@@ -11,6 +11,7 @@ import VideoTabsComponent from "../../../../../components/VideoTabs";
 import { useVideoStore } from "../../../../../store/videoStore";
 import { useEffect } from "react";
 import ProfileInfo from "../../../../../components/ProfileInfo";
+import ErrorMessage from "../../../../../components/ErrorMessage";
 
 const videoSource = require("../../../../../assets/video/broadchurch.mp4");
 
@@ -52,7 +53,11 @@ export default function VideoScreen() {
   }, [videoRef, setVideoRef]);
 
   if (error) {
-    return <Text>{error}</Text>;
+    return (
+      <View style={[styles.container, { paddingTop: safeAreaInsets.top }]}>
+        <ErrorMessage message={error} onRetry={refresh} />
+      </View>
+    );
   }
 
   return (

@@ -21,34 +21,70 @@ export const useNotesStore = create<NotesState>()(
   persist(
     (set, get) => ({
       notes: [],
-      setNotes: (notes: NoteItem[]) => set({ notes }),
-      addNote: (note: NoteItem) =>
-        set((state) => ({ notes: [...(state.notes || []), note] })),
+      setNotes: (notes: NoteItem[]) => {
+        try {
+          set({ notes });
+        } catch (error) {
+          console.error("Błąd podczas zapisywania notatek:", error);
+        }
+      },
+      addNote: (note: NoteItem) => {
+        try {
+          set((state) => ({ notes: [...(state.notes || []), note] }));
+        } catch (error) {
+          console.error("Błąd podczas dodawania notatki:", error);
+        }
+      },
       addNoteWithProgress: (
         content: string,
         videoId: string,
         currentTime: number
       ) => {
-        const newNote: NoteItem = {
-          id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          content,
-          timestamp: currentTime,
-          videoId,
-        };
-        set((state) => ({ notes: [...(state.notes || []), newNote] }));
+        try {
+          const newNote: NoteItem = {
+            id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            content,
+            timestamp: currentTime,
+            videoId,
+          };
+          set((state) => ({ notes: [...(state.notes || []), newNote] }));
+        } catch (error) {
+          console.error("Błąd podczas dodawania notatki z postępem:", error);
+        }
       },
-      deleteNote: (id: string) =>
-        set((state) => ({
-          notes: state.notes?.filter((note) => note.id !== id) || [],
-        })),
+      deleteNote: (id: string) => {
+        try {
+          set((state) => ({
+            notes: state.notes?.filter((note) => note.id !== id) || [],
+          }));
+        } catch (error) {
+          console.error("Błąd podczas usuwania notatki:", error);
+        }
+      },
       getNotesByVideoId: (videoId: string) => {
-        return get().notes.filter((note) => note.videoId === videoId);
+        try {
+          return get().notes.filter((note) => note.videoId === videoId);
+        } catch (error) {
+          console.error("Błąd podczas pobierania notatek:", error);
+          return [];
+        }
       },
-      resetNotes: () => set({ notes: [] }),
+      resetNotes: () => {
+        try {
+          set({ notes: [] });
+        } catch (error) {
+          console.error("Błąd podczas resetowania notatek:", error);
+        }
+      },
     }),
     {
       name: "notes-storage",
       storage: createJSONStorage(() => AsyncStorage),
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          console.error("Błąd podczas wczytywania notatek z pamięci:", error);
+        }
+      },
     }
   )
 );
