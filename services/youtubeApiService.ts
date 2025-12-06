@@ -24,7 +24,7 @@ export interface SearchVideosParams {
   maxResults?: number;
 }
 
-const mapSearchResponse = (
+export const mapSearchResponse = (
   items: YouTubeSearchResponse["items"]
 ): VideoItem[] => {
   return items.map((item) => ({
@@ -37,7 +37,9 @@ const mapSearchResponse = (
   }));
 };
 
-const mapVideoDetailsResponse = (item: YouTubeRawVideoItem): VideoItem => {
+export const mapVideoDetailsResponse = (
+  item: YouTubeRawVideoItem
+): VideoItem => {
   return {
     id: item.id,
     title: item.snippet.title,

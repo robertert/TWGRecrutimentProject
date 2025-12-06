@@ -5,12 +5,16 @@ import {
   TextInput,
   Pressable,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Colors } from "../../../../../constants/colors";
 import { useNotesStore } from "../../../../../store/notesStore";
 import { useVideoStore } from "../../../../../store/videoStore";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatTime } from "../../../../../utils/functions";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -21,10 +25,32 @@ export default function NotesScreen() {
   const { currentTime } = useVideoStore();
   const { addNoteWithProgress, getNotesByVideoId } = useNotesStore();
   const [noteContent, setNoteContent] = useState("");
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const videoNotes = getNotesByVideoId(id as string);
 
   const videoRef = useVideoStore((state) => state.videoRef);
+
+  useEffect(() => {
+    const keyboardWillShow = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+      }
+    );
+
+    const keyboardWillHide = Keyboard.addListener(
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
+      () => {
+        setKeyboardHeight(0);
+      }
+    );
+
+    return () => {
+      keyboardWillShow.remove();
+      keyboardWillHide.remove();
+    };
+  }, []);
 
   const setCurrentTime = (time: number) => {
     if (videoRef) {
@@ -39,53 +65,72 @@ export default function NotesScreen() {
     }
   };
 
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+  };
+
   return (
-    <View style={[styles.container, { paddingBottom: safeAreaInsets.bottom }]}>
-      <ScrollView
-        style={styles.notesList}
-        contentContainerStyle={styles.notesListContent}
-        showsVerticalScrollIndicator={false}
+    <TouchableWithoutFeedback onPress={dismissKeyboard}>
+      <View
+        style={[styles.container, { paddingBottom: safeAreaInsets.bottom }]}
       >
-        {videoNotes.length === 0 ? (
-          <Text style={styles.emptyText}>
-            No notes yet. Add your first note!
-          </Text>
-        ) : (
-          videoNotes.map((note) => (
-            <Pressable
-              key={note.id}
-              onPress={() => {
-                setCurrentTime(note.timestamp);
-              }}
-            >
-              <View style={styles.noteItem}>
-                <Text style={styles.noteTimestamp}>
-                  {formatTime(note.timestamp)}
-                </Text>
-                <Text style={styles.noteContent}>{note.content}</Text>
-              </View>
-            </Pressable>
-          ))
+        {keyboardHeight == 0 && (
+          <ScrollView
+            style={[
+              styles.notesList,
+              { marginBottom: keyboardHeight > 0 ? keyboardHeight + 20 : 0 },
+            ]}
+            contentContainerStyle={styles.notesListContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {videoNotes.length === 0 ? (
+              <Text style={styles.emptyText}>
+                No notes yet. Add your first note!
+              </Text>
+            ) : (
+              videoNotes.map((note) => (
+                <Pressable
+                  key={note.id}
+                  onPress={() => {
+                    setCurrentTime(note.timestamp);
+                  }}
+                >
+                  <View style={styles.noteItem}>
+                    <Text style={styles.noteTimestamp}>
+                      {formatTime(note.timestamp)}
+                    </Text>
+                    <Text style={styles.noteContent}>{note.content}</Text>
+                  </View>
+                </Pressable>
+              ))
+            )}
+          </ScrollView>
         )}
-      </ScrollView>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter notes..."
-          value={noteContent}
-          onChangeText={setNoteContent}
-          multiline
-          placeholderTextColor={Colors.primary500}
-        />
-        <Pressable
-          onPress={handleAddNote}
-          style={[styles.addButton]}
-          disabled={!noteContent.trim()}
+        <View
+          style={[
+            styles.inputContainer,
+            { marginTop: keyboardHeight > 0 ? 5 : 0 },
+          ]}
         >
-          <Text style={styles.addButtonText}>Add Note</Text>
-        </Pressable>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter notes..."
+            value={noteContent}
+            onChangeText={setNoteContent}
+            multiline
+            placeholderTextColor={Colors.primary500}
+          />
+          <Pressable
+            onPress={handleAddNote}
+            style={[styles.addButton]}
+            disabled={!noteContent.trim()}
+          >
+            <Text style={styles.addButtonText}>Add Note</Text>
+          </Pressable>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 

@@ -42,3 +42,8 @@ yarn-error.*
 
 # API keys
 .env
+
+
+# Jest coverage
+coverage/
+*.lcov

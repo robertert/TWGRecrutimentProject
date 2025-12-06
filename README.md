@@ -111,7 +111,7 @@ Aplikacja mobilna do nauki oparta na treściach YouTube, stworzona jako zadanie 
 
 ```bash
 git clone git@github.com:robertert/TWGRecrutimentProject.git
-cd TWGProjekt
+cd TWGRecrutimentProject
 ```
 
 ### Instalacja zależności
